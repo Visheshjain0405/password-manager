@@ -1,0 +1,10 @@
+node_modules
+.env
+dist
+.vscode
+.DS_Store
+frontend/dist
+backend/uploads
+backend/temp
+extensions
+# (Comment: Usually you want the extension code, but sometimes you don't if you're deploying a web app)
