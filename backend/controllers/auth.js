@@ -28,10 +28,11 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        console.log(email, password);
+        console.log(`Login attempt for: ${email}`);
 
-        // Validate emil & password
+        // Validate email & password
         if (!email || !password) {
+            console.log('Login failed: Missing email or password');
             return res.status(400).json({ success: false, error: 'Please provide an email and password' });
         }
 
@@ -39,6 +40,7 @@ exports.login = async (req, res, next) => {
         const user = await User.findOne({ email }).select('+password');
 
         if (!user) {
+            console.log('Login failed: User not found');
             return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
 
@@ -46,6 +48,7 @@ exports.login = async (req, res, next) => {
         const isMatch = await user.matchPassword(password);
 
         if (!isMatch) {
+            console.log('Login failed: Password mismatch');
             return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
 
