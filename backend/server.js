@@ -12,13 +12,14 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(express.json());
 app.use(cors({
     origin: ['https://password-manager-sage-six.vercel.app', 'https://securevault-frontend-1.onrender.com', 'http://localhost:5173'],
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.use(express.json());
 
 // Routes
 app.use('/api/v1/auth', require('./routes/auth'));
