@@ -13,7 +13,10 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://securevault-frontend-1.onrender.com',
+    credentials: true
+}));
 
 // Routes
 app.use('/api/v1/auth', require('./routes/auth'));

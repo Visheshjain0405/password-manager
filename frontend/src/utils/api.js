@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://securevault-backend-ghz0.onrender.com',
+    baseURL: 'https://securevault-backend-ghz0.onrender.com/api/v1',
     headers: {
         'Content-Type': 'application/json'
     }
