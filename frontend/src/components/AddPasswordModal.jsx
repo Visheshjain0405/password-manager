@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Globe, User, Lock, Eye, EyeOff } from 'lucide-react';
 
-const AddPasswordModal = ({ isOpen, onClose, onSave }) => {
+const AddPasswordModal = ({ isOpen, onClose, onSave, initialData }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -10,6 +10,26 @@ const AddPasswordModal = ({ isOpen, onClose, onSave }) => {
         url: '',
         category: 'Personal'
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                name: initialData.name || '',
+                username: initialData.username || '',
+                password: initialData.password || '',
+                url: initialData.url || '',
+                category: initialData.category || 'Personal'
+            });
+        } else {
+            setFormData({
+                name: '',
+                username: '',
+                password: '',
+                url: '',
+                category: 'Personal'
+            });
+        }
+    }, [initialData, isOpen]);
 
     if (!isOpen) return null;
 
@@ -24,8 +44,6 @@ const AddPasswordModal = ({ isOpen, onClose, onSave }) => {
         e.preventDefault();
         onSave(formData);
         onClose();
-        // Reset form on close/save if needed
-        setFormData({ name: '', username: '', password: '', url: '', category: 'Personal' });
     };
 
     return (
@@ -43,7 +61,7 @@ const AddPasswordModal = ({ isOpen, onClose, onSave }) => {
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex items-center justify-between p-6 border-b border-slate-100">
-                        <h3 className="text-xl font-bold text-slate-900">Add New Password</h3>
+                        <h3 className="text-xl font-bold text-slate-900">{initialData ? 'Edit Password' : 'Add New Password'}</h3>
                         <button
                             onClick={onClose}
                             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"

@@ -3,9 +3,9 @@ import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import AddPasswordModal from '../components/AddPasswordModal';
 import api from '../utils/api';
-import { Search, Plus, Copy, MoreVertical, Key, Globe, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Search, Plus, Copy, Key, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
 
-const PasswordItem = ({ id, name, username, password, url, icon: Icon, color, onDelete }) => {
+const PasswordItem = ({ id, name, username, password, url, icon: Icon, color, onDelete, onEdit }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -44,6 +44,13 @@ const PasswordItem = ({ id, name, username, password, url, icon: Icon, color, on
                     <Copy size={18} />
                 </button>
                 <button
+                    onClick={() => onEdit({ _id: id, name, username, password, url })}
+                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    title="Edit"
+                >
+                    <Pencil size={18} />
+                </button>
+                <button
                     onClick={() => onDelete(id)}
                     className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     title="Delete"
@@ -58,6 +65,7 @@ const PasswordItem = ({ id, name, username, password, url, icon: Icon, color, on
 const Passwords = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingPassword, setEditingPassword] = useState(null);
     const [passwordList, setPasswordList] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -82,17 +90,37 @@ const Passwords = () => {
         }
     };
 
-    const handleSavePassword = async (newPassword) => {
+    const handleSavePassword = async (updatedPassword) => {
         try {
-            const res = await api.post('/passwords', newPassword);
-            if (res.data.success) {
-                setPasswordList([res.data.data, ...passwordList]);
-                setCurrentPage(1);
-                if (newPassword.category) setSelectedCategory(newPassword.category);
+            if (editingPassword) {
+                const res = await api.put(`/passwords/${editingPassword._id}`, updatedPassword);
+                if (res.data.success) {
+                    setPasswordList(passwordList.map(p => p._id === editingPassword._id ? res.data.data : p));
+                }
+            } else {
+                const res = await api.post('/passwords', updatedPassword);
+                if (res.data.success) {
+                    setPasswordList([res.data.data, ...passwordList]);
+                    setCurrentPage(1);
+                    if (updatedPassword.category) setSelectedCategory(updatedPassword.category);
+                }
             }
         } catch (err) {
             console.error('Error saving password:', err);
+        } finally {
+            setEditingPassword(null);
         }
+    };
+
+    const handleEditClick = (pwd) => {
+        const fullPwd = passwordList.find(p => p._id === pwd._id);
+        setEditingPassword(fullPwd);
+        setIsAddModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsAddModalOpen(false);
+        setEditingPassword(null);
     };
 
     const handleDeletePassword = async (id) => {
@@ -135,8 +163,9 @@ const Passwords = () => {
 
             <AddPasswordModal
                 isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
+                onClose={handleCloseModal}
                 onSave={handleSavePassword}
+                initialData={editingPassword}
             />
 
             <main className="lg:pl-80 pt-8 pb-12 px-6 sm:px-8 lg:px-10 transition-all duration-300">
@@ -201,6 +230,7 @@ const Passwords = () => {
                                     id={pwd._id}
                                     {...pwd}
                                     onDelete={handleDeletePassword}
+                                    onEdit={handleEditClick}
                                 />
                             ))
                         ) : (
