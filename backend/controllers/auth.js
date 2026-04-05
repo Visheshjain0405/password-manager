@@ -52,7 +52,7 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
 
-        // --- 2FA Step ---
+        /* --- 2FA Step (DISABLED) ---
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         user.otp = otp;
@@ -89,6 +89,10 @@ exports.login = async (req, res, next) => {
             await user.save({ validateBeforeSave: false });
             return res.status(500).json({ success: false, error: 'Failed to send verification email' });
         }
+        */
+
+        // Directly send token and skip 2FA
+        sendTokenResponse(user, 200, res);
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });
     }
