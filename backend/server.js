@@ -14,7 +14,9 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: ['https://password-manager-sage-six.vercel.app', 'https://securevault-frontend-1.onrender.com', 'http://localhost:5173'], // Add your Vercel URL here
+    origin: ['https://password-manager-sage-six.vercel.app', 'https://securevault-frontend-1.onrender.com', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 
